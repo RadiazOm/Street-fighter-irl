@@ -6,12 +6,13 @@ import {Camera} from "@mediapipe/camera_utils";
 import kNear from "./knear/Knear.js";
 import './App.css'
 import Webcam from "react-webcam";
+import * as kbm from "kbm-robot"
 
 
 function App() {
-
     let poseLandmarker;
     let runningMode = "VIDEO"
+    let lastPrediction = ''
     let enablePredictions = false
     let trainCurrentPose = false
     let predictCurrentPose = false
@@ -56,15 +57,14 @@ function App() {
                     let startTimeMs = performance.now()
                     if (lastVideoTime === webcamRef.current.video.currentTime) return
                     lastVideoTime = webcamRef.current.video.currentTime
-                    await poseLandmarker.detectForVideo(webcamRef.current.video, startTimeMs, (result) => {
+                    poseLandmarker.detectForVideo(webcamRef.current.video, startTimeMs, (result) => {
                         if (trainCurrentPose) {
                             trainPose(result.landmarks, poseNameRef.current.value)
                         }
-                        if (predictCurrentPose) {
-                            predictPose(result.landmarks)
-                        }
                         canvasCtx.save();
                         canvasCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                        if (!result.landmarks) return
+                        predictPose(result.landmarks)
                         for (const landmark of result.landmarks) {
                             drawingUtils.drawLandmarks(landmark, { radius : 3
                             })
@@ -132,10 +132,25 @@ function App() {
     function predictPose(landmarks) {
         predictCurrentPose = false
         let arrayLandmarks = []
+        if (landmarks.length === 0) return
         for (const landmark of landmarks[0]) {
             arrayLandmarks.push(landmark.x, landmark.y)
         }
         const prediction = machine.classify(arrayLandmarks)
+
+
+        if (prediction === '5hp' && prediction !== lastPrediction) {
+            console.log('PUNCH!!!')
+            // kbm.startJar()
+            // kbm.press('h')
+            //     .release('h')
+            //     .go()
+            //     .then(kbm.stopJar)
+            fetch('http://localhost:8000', {
+                "mode": "no-cors"
+            })
+        }
+        lastPrediction = prediction
         console.log(prediction)
     }
 
@@ -144,15 +159,25 @@ function App() {
     }
 
     function togglePredictions() {
-        enablePredictions = !enablePredictions
+        console.log('enabling tracking in 5 seconds')
+        setTimeout(() => {
+            enablePredictions = !enablePredictions
+        }, 5000)
     }
 
     function toggleTrain() {
-        trainCurrentPose = !trainCurrentPose
+        console.log('training pose in 5 seconds')
+        setTimeout(() => {
+            trainCurrentPose = !trainCurrentPose
+            console.log('trained pose')
+        }, 5000)
     }
 
     function togglePredictPose() {
-        predictCurrentPose = !predictCurrentPose
+        console.log('predicting pose in 5 seconds')
+        setTimeout(() => {
+            predictCurrentPose = !predictCurrentPose
+        }, 5000)
     }
 
     return (
