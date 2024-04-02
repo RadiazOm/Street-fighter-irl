@@ -13,13 +13,16 @@ function App() {
     let poseLandmarker;
     let runningMode = "VIDEO"
     let lastPrediction = ''
+    let trainPoseCounter = 0
     let enablePredictions = false
     let trainCurrentPose = false
     let predictCurrentPose = false
+    let sendinputs = false
     let lastVideoTime = -1
     const webcamRef = useRef(null);
     const canvasRef = useRef(null)
     const poseNameRef = useRef(null)
+    const currentMoveText = useRef(null)
     const k = 3
     const machine = new kNear(k)
 
@@ -90,7 +93,7 @@ function App() {
                 delegate: "GPU"
             },
             runningMode: runningMode,
-            numPoses: 2
+            numPoses: 1
         });
     }
 
@@ -120,13 +123,16 @@ function App() {
 
 
     function trainPose(landmarks, pose) {
-        trainCurrentPose = false
         let arrayLandmarks = []
         for (const landmark of landmarks[0]) {
             arrayLandmarks.push(landmark.x, landmark.y)
         }
         machine.learn(arrayLandmarks, pose)
         addToLocalStorage(pose, arrayLandmarks)
+        trainPoseCounter--
+        if (trainPoseCounter < 0) {
+            trainCurrentPose = false
+        }
     }
 
     function predictPose(landmarks) {
@@ -138,24 +144,56 @@ function App() {
         }
         const prediction = machine.classify(arrayLandmarks)
 
-
-        if (prediction === '5hp' && prediction !== lastPrediction) {
-            console.log('PUNCH!!!')
-            // kbm.startJar()
-            // kbm.press('h')
-            //     .release('h')
-            //     .go()
-            //     .then(kbm.stopJar)
-            fetch('http://localhost:8000', {
-                "mode": "no-cors"
-            })
+        if (sendinputs) {
+            if (prediction !== lastPrediction) {
+                console.log('PUNCH!!!')
+                // kbm.startJar()
+                // kbm.press('h')
+                //     .release('h')
+                //     .go()
+                //     .then(kbm.stopJar)
+                console.log(prediction)
+                fetch('http://localhost:8000', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        move: prediction
+                    })
+                })
+            }
         }
         lastPrediction = prediction
+
+        currentMoveText.current.innerHTML = prediction
         console.log(prediction)
     }
 
     function deletePoses() {
         localStorage.setItem('poseData', '')
+    }
+
+    function deleteMove() {
+        if (!localStorage.getItem('poseData')) return
+
+        let poseData = JSON.parse(localStorage.getItem('poseData'))
+
+        for (const pose of poseData) {
+            if (pose.label === poseNameRef.current.value) {
+                console.log('yes')
+                const key = poseData.indexOf(pose)
+                delete poseData[key]
+            }
+        }
+
+        console.log(poseData)
+    }
+
+    function sendInputs() {
+        sendinputs = !sendinputs
     }
 
     function togglePredictions() {
@@ -169,6 +207,7 @@ function App() {
         console.log('training pose in 5 seconds')
         setTimeout(() => {
             trainCurrentPose = !trainCurrentPose
+            trainPoseCounter = 20
             console.log('trained pose')
         }, 5000)
     }
@@ -180,13 +219,35 @@ function App() {
         }, 5000)
     }
 
+    function testInput() {
+        setTimeout(() => {
+            fetch('http://localhost:8000', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    move: poseNameRef.current.value
+                })
+            })
+        }, 5000)
+    }
+
     return (
     <>
-        <input type="text" placeholder="pose name" ref={poseNameRef}/>
-        <button onClick={togglePredictions}>Toggle predictions</button>
-        <button onClick={toggleTrain}>Train current pose</button>
-        <button onClick={togglePredictPose}>Predict pose</button>
-        <button onClick={deletePoses}>Delete model</button>
+        <h1 className="current-move" ref={currentMoveText}>current move</h1>
+        <div>
+            <input type="text" placeholder="pose name" ref={poseNameRef}/>
+            <button onClick={togglePredictions}>Toggle predictions</button>
+            <button onClick={toggleTrain}>Train current pose</button>
+            <button onClick={togglePredictPose}>Predict pose</button>
+            <button onClick={deletePoses}>Delete model</button>
+            <button onClick={deleteMove}>Delete move</button>
+            <button onClick={sendInputs}>send inputs</button>
+            <button onClick={testInput}>test input</button>
+        </div>
         <div>
           <Webcam className="overlap" audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
           <canvas className="overlap" ref={canvasRef}></canvas>

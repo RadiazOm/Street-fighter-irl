@@ -5,6 +5,16 @@
   text-align: center;
 }
 
+.current-move {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-right: auto;
+  margin-left: auto;
+  font-size: 200px;
+}
+
 .overlap {
   position: absolute;
   margin-left: auto;
