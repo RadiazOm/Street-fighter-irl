@@ -4,12 +4,13 @@ import {DrawingUtils, FilesetResolver, PoseLandmarker} from "@mediapipe/tasks-vi
 import {Camera} from "@mediapipe/camera_utils";
 import kNear from "../knear/Knear.js";
 
-function getData() {
+function CreateData() {
 
     let poseLandmarker;
     let runningMode = "VIDEO"
     let enablePredictions = false
     let trainCurrentPose = false
+    let trainTestPose = false
     let lastVideoTime = -1
     const webcamRef = useRef(null);
     const canvasRef = useRef(null)
@@ -37,7 +38,7 @@ function getData() {
                     if (lastVideoTime === webcamRef.current.video.currentTime) return
                     lastVideoTime = webcamRef.current.video.currentTime
                     poseLandmarker.detectForVideo(webcamRef.current.video, startTimeMs, (result) => {
-                        if (trainCurrentPose) {
+                        if (trainCurrentPose || trainTestPose) {
                             trainPose(result.landmarks, poseNameRef.current.value)
                         }
                         canvasCtx.save();
@@ -85,13 +86,32 @@ function getData() {
         localStorage.setItem('poseData', JSON.stringify(poseData))
     }
 
+    function addToTestLocalStorage(pose, landmarks) {
+        let poseData = []
+        if (localStorage.getItem('testData')) {
+            poseData = JSON.parse(localStorage.getItem('testData'))
+        }
+        const newPose = {
+            pose: landmarks,
+            label: pose
+        }
+        poseData.push(newPose)
+        localStorage.setItem('testData', JSON.stringify(poseData))
+    }
+
     function trainPose(landmarks, pose) {
         let arrayLandmarks = []
         for (const landmark of landmarks[0]) {
             arrayLandmarks.push(landmark.x, landmark.y)
         }
-        addToLocalStorage(pose, arrayLandmarks)
+        console.log(trainTestPose)
+        if (trainTestPose) {
+            addToTestLocalStorage(pose, arrayLandmarks)
+        } else {
+            addToLocalStorage(pose, arrayLandmarks)
+        }
         trainCurrentPose = false
+        trainTestPose = false
     }
 
     function togglePredictions() {
@@ -99,6 +119,14 @@ function getData() {
         setTimeout(() => {
             enablePredictions = !enablePredictions
         }, 5000)
+    }
+
+    function toggleTestTrain() {
+        console.log('training pose in 5 seconds')
+        setTimeout(() => {
+            trainTestPose = !trainTestPose
+            console.log('trained pose')
+        }, 1)
     }
 
     function toggleTrain() {
@@ -120,6 +148,7 @@ function getData() {
                 <button onClick={removeDataset}>Reset dataset</button>
                 <button onClick={togglePredictions}>Toggle predictions</button>
                 <button onClick={toggleTrain}>Train current pose</button>
+                <button onClick={toggleTestTrain}>Train current test pose</button>
             </div>
             <div>
                 <Webcam className="overlap" audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
@@ -129,4 +158,4 @@ function getData() {
     )
 }
 
-export default getData
+export default CreateData

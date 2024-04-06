@@ -4,7 +4,8 @@ import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import App from './App.jsx'
 import './index.css'
 import Main from "./pages/main.jsx";
-import GetData from "./pages/GetData.jsx";
+import CreateData from "./pages/CreateData.jsx";
+import NNtrain from "./pages/NNtrain.jsx";
 
 const router = createBrowserRouter([
     {
@@ -17,7 +18,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/train',
-                element: <GetData/>
+                element: <CreateData/>
+            },
+            {
+                path: '/network',
+                element: <NNtrain/>
             }
         ]
     }
