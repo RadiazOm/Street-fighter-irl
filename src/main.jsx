@@ -6,6 +6,7 @@ import './index.css'
 import Main from "./pages/main.jsx";
 import CreateData from "./pages/CreateData.jsx";
 import NNtrain from "./pages/NNtrain.jsx";
+import Matrix from "./pages/matrix.jsx";
 
 const router = createBrowserRouter([
     {
@@ -23,7 +24,12 @@ const router = createBrowserRouter([
             {
                 path: '/network',
                 element: <NNtrain/>
+            },
+            {
+                path: '/matrix',
+                element: <Matrix/>
             }
+
         ]
     }
 ])

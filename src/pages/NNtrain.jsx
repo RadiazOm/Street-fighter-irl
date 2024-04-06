@@ -19,10 +19,10 @@ function NNtrain() {
     // nn.normalizeData()
 
     async function finishedTraining(){
-        let poseData = JSON.parse(localStorage.getItem('poseData'))
+        let testData = JSON.parse(localStorage.getItem('testData'))
 
-        const results = await nn.classify(poseData[27].pose)
-        console.log(poseData[27].label)
+        const results = await nn.classify(testData[27].pose)
+        console.log(testData[27].label)
         console.log(results)
     }
 
@@ -44,9 +44,14 @@ function NNtrain() {
         }
     }
 
+    function saveModel() {
+        nn.save()
+    }
+
     return (
         <>
             <button onClick={train}>Train!</button>
+            <button onClick={saveModel}>Save</button>
             <p>training :)</p>
         </>
     )
