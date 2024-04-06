@@ -6,7 +6,7 @@ function NNtrain() {
     const nn = ml5.neuralNetwork({ task: 'classification', debug: true })
 
     useEffect(() => {
-        getFromLocalStorage()
+        // getFromLocalStorage()
     });
 
     // nn.addData([18,9.2,8.1,2], {label:"cat"})
@@ -24,6 +24,9 @@ function NNtrain() {
         const results = await nn.classify(testData[27].pose)
         console.log(testData[27].label)
         console.log(results)
+        const results1 = await nn.classify(testData[28].pose)
+        console.log(testData[28].label)
+        console.log(results1)
     }
 
     function train() {
@@ -36,12 +39,20 @@ function NNtrain() {
 
         let poseData = JSON.parse(localStorage.getItem('poseData'))
 
+        let debugpose = poseData.find((element) => element.label === '6')
+
         poseData = poseData.toSorted(() => (Math.random() - 0.5))
-        console.log(poseData)
+        // console.log(poseData)
+
+        // console.log(poseData.find((element) => element.pose === debugpose.pose))
 
         for (const pose of poseData) {
-            nn.addData(pose.pose, {label: pose.label})
+
+            console.log(pose.label)
+            console.log(poseData.find((element) => element.pose === pose.pose))
+            nn.addData(pose.pose, {label: pose.label + "|"})
         }
+        console.log('done loading')
     }
 
     function saveModel() {
@@ -50,6 +61,7 @@ function NNtrain() {
 
     return (
         <>
+            <button onClick={getFromLocalStorage}>Load data</button>
             <button onClick={train}>Train!</button>
             <button onClick={saveModel}>Save</button>
             <p>training :)</p>

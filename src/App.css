@@ -42,3 +42,12 @@ td, th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+
+.correct {
+  color: white;
+  background-color: green;
+}
+
+.wrong {
+  background-color: red;
+}

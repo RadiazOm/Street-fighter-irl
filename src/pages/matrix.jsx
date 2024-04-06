@@ -1,9 +1,12 @@
 import {useEffect, useState} from "react";
 import * as ml5 from "ml5"
+import '../App.css'
+
 
 function Matrix() {
     let poses = ['5', '5lp', '5mp', '5hp', '5mk', '6', '236hp', '1']
     let [matrix, setMatrix] = useState(<></>);
+    let [accuracy, setAccuracy] = useState(<h3>accuracy</h3>)
     let nn;
 
     useEffect(() => {
@@ -40,7 +43,8 @@ function Matrix() {
 
         let predictions = []
         for (const correctPose of poses) {
-            const prediction = await nn.classify(correctPose.pose)
+            let prediction = await nn.classify(correctPose.pose)
+            prediction[0].label = prediction[0].label.replace('|', '')
             console.log('predicted: ' + correctPose.label + ' result: ' + prediction[0].label)
             predictions.push(prediction[0].label)
         }
@@ -50,23 +54,47 @@ function Matrix() {
 
     async function createMatrix() {
         let rows = []
+        let totalCorrectPoses = 0;
+        let totalPoses = getTestFromLocalStorage().length
         for (const pose of poses) {
             const predictions = await testNNpose(pose)
+            let td;
+            td = poses.map((poseMap) => {
+                let className = ''
+                if (predictions.filter((element) => element === poseMap).length > 0) {
+                    if (pose === poseMap) {
+                        className = 'correct'
+                        totalCorrectPoses += predictions.filter((element) => element === poseMap).length
+                    } else {
+                        className = 'wrong'
+                    }
+
+                }
+                return <td className={className}>{predictions.filter((element) => element === poseMap).length}</td>
+            })
 
             rows.push(<tr>
                 <th>{pose}</th>
-                <td>{predictions.filter((element) => element === poses[0]).length}</td>
-                <td>{predictions.filter((element) => element === poses[1]).length}</td>
-                <td>{predictions.filter((element) => element === poses[2]).length}</td>
-                <td>{predictions.filter((element) => element === poses[3]).length}</td>
-                <td>{predictions.filter((element) => element === poses[4]).length}</td>
-                <td>{predictions.filter((element) => element === poses[5]).length}</td>
-                <td>{predictions.filter((element) => element === poses[6]).length}</td>
-                <td>{predictions.filter((element) => element === poses[7]).length}</td>
+                {td}
             </tr>)
         }
+        setAccuracy(<h3>{totalCorrectPoses + " / " + totalPoses + " = " + totalCorrectPoses / totalPoses}</h3>)
+
         return (<table>
-            <tbody>{rows}</tbody>
+            <tbody>
+            <tr>
+                <th>Confusion matrix</th>
+                <th>5</th>
+                <th>5lp</th>
+                <th>5mp</th>
+                <th>5hp</th>
+                <th>5mk</th>
+                <th>6</th>
+                <th>236hp</th>
+                <th>1</th>
+            </tr>
+            {rows}
+            </tbody>
         </table>)
     }
 
@@ -78,6 +106,7 @@ function Matrix() {
         <>
             <button onClick={buttonClick}>Go!</button>
             <h1>Confusion matix</h1>
+            {accuracy}
             {matrix}
         </>
     )
