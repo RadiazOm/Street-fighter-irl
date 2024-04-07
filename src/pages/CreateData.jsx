@@ -172,36 +172,38 @@ function CreateData() {
 
     return (
         <>
-            <div>
-                <h2>train dataset:</h2>
-                <p>5: {getFromLocalStorage('5')}</p>
-                <p>5lp: {getFromLocalStorage('5lp')}</p>
-                <p>5mp: {getFromLocalStorage('5mp')}</p>
-                <p>5hp: {getFromLocalStorage('5hp')}</p>
-                <p>5mk: {getFromLocalStorage('5mk')}</p>
-                <p>6: {getFromLocalStorage('6')}</p>
-                <p>236hp: {getFromLocalStorage('236hp')}</p>
-                <p>1: {getFromLocalStorage('1')}</p>
-                <h2>test dataset:</h2>
-                <p>5: {getTestFromLocalStorage('5')}</p>
-                <p>5lp: {getTestFromLocalStorage('5lp')}</p>
-                <p>5mp: {getTestFromLocalStorage('5mp')}</p>
-                <p>5hp: {getTestFromLocalStorage('5hp')}</p>
-                <p>5mk: {getTestFromLocalStorage('5mk')}</p>
-                <p>6: {getTestFromLocalStorage('6')}</p>
-                <p>236hp: {getTestFromLocalStorage('236hp')}</p>
-                <p>1: {getTestFromLocalStorage('1')}</p>
-            </div>
-            <div>
-                <input type="text" placeholder="pose name" ref={poseNameRef}/>
-                <button onClick={removeDataset}>Reset dataset</button>
-                <button onClick={togglePredictions}>Toggle predictions</button>
-                <button onClick={toggleTrain}>Train current pose</button>
-                <button onClick={toggleTestTrain}>Train current test pose</button>
-            </div>
-            <div>
-                <Webcam className="overlap" audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
-                <canvas className="overlap" ref={canvasRef}></canvas>
+            <div className="center">
+                <div>
+                    <h2>train dataset:</h2>
+                    <p>5: {getFromLocalStorage('5')}</p>
+                    <p>5lp: {getFromLocalStorage('5lp')}</p>
+                    <p>5mp: {getFromLocalStorage('5mp')}</p>
+                    <p>5hp: {getFromLocalStorage('5hp')}</p>
+                    <p>5mk: {getFromLocalStorage('5mk')}</p>
+                    <p>6: {getFromLocalStorage('6')}</p>
+                    <p>236hp: {getFromLocalStorage('236hp')}</p>
+                    <p>1: {getFromLocalStorage('1')}</p>
+                    <h2>test dataset:</h2>
+                    <p>5: {getTestFromLocalStorage('5')}</p>
+                    <p>5lp: {getTestFromLocalStorage('5lp')}</p>
+                    <p>5mp: {getTestFromLocalStorage('5mp')}</p>
+                    <p>5hp: {getTestFromLocalStorage('5hp')}</p>
+                    <p>5mk: {getTestFromLocalStorage('5mk')}</p>
+                    <p>6: {getTestFromLocalStorage('6')}</p>
+                    <p>236hp: {getTestFromLocalStorage('236hp')}</p>
+                    <p>1: {getTestFromLocalStorage('1')}</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="pose name" ref={poseNameRef}/>
+                    <button onClick={removeDataset}>Reset dataset</button>
+                    <button onClick={togglePredictions}>Toggle predictions</button>
+                    <button onClick={toggleTrain}>Train current pose</button>
+                    <button onClick={toggleTestTrain}>Train current test pose</button>
+                </div>
+                <div>
+                    <Webcam className="overlap" style={{top: "30em"}} audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
+                    <canvas className="overlap" style={{top: "30em"}} ref={canvasRef}></canvas>
+                </div>
             </div>
         </>
     )

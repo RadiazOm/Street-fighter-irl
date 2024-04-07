@@ -76,6 +76,7 @@ function Matrix() {
             rows.push(<tr>
                 <th>{pose}</th>
                 {td}
+                <td>total: {predictions.length}</td>
             </tr>)
         }
         setAccuracy(<h3>{totalCorrectPoses + " / " + totalPoses + " = " + totalCorrectPoses / totalPoses}</h3>)
@@ -104,10 +105,12 @@ function Matrix() {
 
     return (
         <>
-            <button onClick={buttonClick}>Go!</button>
-            <h1>Confusion matix</h1>
-            {accuracy}
-            {matrix}
+            <div className="center">
+                <button onClick={buttonClick}>Go!</button>
+                <h1>Confusion matrix</h1>
+                {accuracy}
+                {matrix}
+            </div>
         </>
     )
 }

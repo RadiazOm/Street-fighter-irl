@@ -1,4 +1,3 @@
-import Main from "./pages/main.jsx";
 import {Outlet} from "react-router-dom";
 
 

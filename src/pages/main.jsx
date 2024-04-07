@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {PoseLandmarker,
     FilesetResolver,
     DrawingUtils} from "@mediapipe/tasks-vision"
@@ -19,12 +19,12 @@ function Main() {
     let enablePredictions = false
     let trainCurrentPose = false
     let predictCurrentPose = false
-    let sendinputs = false
+    let sendinputs = true
     let lastVideoTime = -1
     const webcamRef = useRef(null);
     const canvasRef = useRef(null)
     const poseNameRef = useRef(null)
-    const currentMoveText = useRef(null)
+    const [currentMove, setCurrentMove] = useState('5')
     const k = 3
     let machine;
     // machine.learn([6, 5, 5], 'dog')
@@ -63,9 +63,6 @@ function Main() {
                     if (lastVideoTime === webcamRef.current.video.currentTime) return
                     lastVideoTime = webcamRef.current.video.currentTime
                     poseLandmarker.detectForVideo(webcamRef.current.video, startTimeMs, (result) => {
-                        if (trainCurrentPose) {
-                            trainPose(result.landmarks, poseNameRef.current.value)
-                        }
                         canvasCtx.save();
                         canvasCtx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
                         if (!result.landmarks) return
@@ -78,7 +75,7 @@ function Main() {
                         canvasCtx.restore();
                     })
                 },
-                width: 640,
+                width: 720,
                 height: 480,
             });
             camera.start();
@@ -144,7 +141,7 @@ function Main() {
         }
         lastPrediction = prediction
 
-        currentMoveText.current.innerHTML = prediction
+        setCurrentMove(prediction)
         console.log(prediction)
     }
 
@@ -164,46 +161,22 @@ function Main() {
     //     console.log(poseData)
     // }
 
-    function sendInputs() {
-        sendinputs = !sendinputs
-    }
-
     function togglePredictions() {
-        console.log('enabling tracking in 5 seconds')
-        setTimeout(() => {
-            enablePredictions = !enablePredictions
-        }, 5000)
-    }
-
-    function testInput() {
-        setTimeout(() => {
-            fetch('http://localhost:8000', {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    move: poseNameRef.current.value
-                })
-            })
-        }, 5000)
+        enablePredictions = !enablePredictions
     }
 
     return (
-        <>
-            <h1 className="current-move" ref={currentMoveText}>current move</h1>
-            <div>
-                <button onClick={togglePredictions}>Toggle predictions</button>
-                <button onClick={sendInputs}>send inputs</button>
-                <button onClick={testInput}>test input</button>
+        <div className="application" style={{overflow: "auto"}}>
+            <div className="instruction">
+                <p className="instruction">This is an application where you do street fighter moves irl and they will translate into the game, just start by punching!</p>
+                <button onClick={togglePredictions}>Start!</button>
             </div>
             <div>
                 <Webcam className="overlap" audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
                 <canvas className="overlap" ref={canvasRef}></canvas>
             </div>
-        </>
+            <img src={'./img/poses/' + currentMove + ".png"} className={"current-move"} alt=""/>
+        </div>
     )
 }
 

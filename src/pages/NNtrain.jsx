@@ -61,10 +61,12 @@ function NNtrain() {
 
     return (
         <>
-            <button onClick={getFromLocalStorage}>Load data</button>
-            <button onClick={train}>Train!</button>
-            <button onClick={saveModel}>Save</button>
-            <p>training :)</p>
+            <div className="center">
+                <button onClick={getFromLocalStorage}>Load data</button>
+                <button onClick={train}>Train!</button>
+                <button onClick={saveModel}>Save</button>
+                <p>training :)</p>
+            </div>
         </>
     )
 }
