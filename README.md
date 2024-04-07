@@ -1,6 +1,6 @@
-# OpenJAIffrey
+# Street Fighter irl
 
-Street fighter irl is a class project in which the person does real life street fighter moves which then translates into the game.
+Street Fighter irl is a class project in which the person does real life street fighter moves which then translates into the game.
 in other words you do the move in real life. The character does the same move in the game.
 
 ## Installation
