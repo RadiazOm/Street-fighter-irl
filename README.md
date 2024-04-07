@@ -1,8 +1,28 @@
-# React + Vite
+# OpenJAIffrey
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Street fighter irl is a class project in which the person does real life street fighter moves which then translates into the game.
+in other words you do the move in real life. The character does the same move in the game.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Firstly clone the GitHub repository code so that you have the project folder on your local pc
+
+Next, use the package manager [node](https://nodejs.org/en) to install the necessary modules.
+
+```bash
+npm install
+```
+
+To start your application, simply start both this project and [server](https://github.com/RadiazOm/street-fighter-server) by going to their respective folders and run the 'dev' command
+
+```shell
+C:\Users\your-server-project-folder> npm run dev
+```
+
+```shell
+C:\Users\your-client-project-folder> npm run dev
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
