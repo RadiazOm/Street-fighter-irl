@@ -73,6 +73,35 @@ function CreateData() {
         });
     }
 
+    function getTestFromLocalStorage(label) {
+        if (!localStorage.getItem('testData')) return 0
+
+        const data = JSON.parse(localStorage.getItem('testData'))
+        let occurances = 0
+
+        for (const item of data) {
+            if (item.label === label) {
+                occurances++
+            }
+        }
+
+        return occurances
+    }
+
+    function getFromLocalStorage(label) {
+        if (!localStorage.getItem('poseData')) return
+
+        const data = JSON.parse(localStorage.getItem('poseData'))
+        let occurances = 0
+
+        for (const item of data) {
+            if (item.label === label) {
+                occurances++
+            }
+        }
+
+        return occurances    }
+
     function addToLocalStorage(pose, landmarks) {
         let poseData = []
         if (localStorage.getItem('poseData')) {
@@ -143,6 +172,26 @@ function CreateData() {
 
     return (
         <>
+            <div>
+                <h2>train dataset:</h2>
+                <p>5: {getFromLocalStorage('5')}</p>
+                <p>5lp: {getFromLocalStorage('5lp')}</p>
+                <p>5mp: {getFromLocalStorage('5mp')}</p>
+                <p>5hp: {getFromLocalStorage('5hp')}</p>
+                <p>5mk: {getFromLocalStorage('5mk')}</p>
+                <p>6: {getFromLocalStorage('6')}</p>
+                <p>236hp: {getFromLocalStorage('236hp')}</p>
+                <p>1: {getFromLocalStorage('1')}</p>
+                <h2>test dataset:</h2>
+                <p>5: {getTestFromLocalStorage('5')}</p>
+                <p>5lp: {getTestFromLocalStorage('5lp')}</p>
+                <p>5mp: {getTestFromLocalStorage('5mp')}</p>
+                <p>5hp: {getTestFromLocalStorage('5hp')}</p>
+                <p>5mk: {getTestFromLocalStorage('5mk')}</p>
+                <p>6: {getTestFromLocalStorage('6')}</p>
+                <p>236hp: {getTestFromLocalStorage('236hp')}</p>
+                <p>1: {getTestFromLocalStorage('1')}</p>
+            </div>
             <div>
                 <input type="text" placeholder="pose name" ref={poseNameRef}/>
                 <button onClick={removeDataset}>Reset dataset</button>

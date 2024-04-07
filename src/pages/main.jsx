@@ -6,6 +6,8 @@ import {Camera} from "@mediapipe/camera_utils";
 import kNear from "../knear/Knear.js";
 import '../App.css'
 import Webcam from "react-webcam";
+import * as ml5 from "ml5"
+
 
 
 function Main() {
@@ -24,8 +26,7 @@ function Main() {
     const poseNameRef = useRef(null)
     const currentMoveText = useRef(null)
     const k = 3
-    const machine = new kNear(k)
-
+    let machine;
     // machine.learn([6, 5, 5], 'dog')
     // machine.learn([4, 2, 6], 'dog')
     // machine.learn([3, 4, 4], 'dog')
@@ -41,7 +42,8 @@ function Main() {
     // console.log(`I think this is a ${prediction}`)
 
     useEffect( () => {
-        getFromLocalStorage()
+        loadModel()
+        // getFromLocalStorage()
         getPoseLandmarker()
             .then(predictLandmarks)
     }, [])
@@ -97,52 +99,26 @@ function Main() {
         });
     }
 
-    function getFromLocalStorage() {
-        if (!localStorage.getItem('poseData')) return
-
-        let poseData = JSON.parse(localStorage.getItem('poseData'))
-        console.log(poseData)
-
-        for (const pose of poseData) {
-            machine.learn(pose.pose, pose.label)
+    function loadModel() {
+        machine = ml5.neuralNetwork({ task: 'classification', debug: true })
+        const modelDetails = {
+            model: './model/model.json',
+            metadata: './model/model_meta.json',
+            weights: './model/model.weights.bin'
         }
+        machine.load(modelDetails, () => console.log("het model is geladen!"))
     }
 
-    function addToLocalStorage(pose, landmarks) {
-        let poseData = []
-        if (localStorage.getItem('poseData')) {
-            poseData = JSON.parse(localStorage.getItem('poseData'))
-        }
-        const newPose = {
-            pose: landmarks,
-            label: pose
-        }
-        poseData.push(newPose)
-        localStorage.setItem('poseData', JSON.stringify(poseData))
-    }
-
-
-    function trainPose(landmarks, pose) {
-        let arrayLandmarks = []
-        for (const landmark of landmarks[0]) {
-            arrayLandmarks.push(landmark.x, landmark.y)
-        }
-        machine.learn(arrayLandmarks, pose)
-        addToLocalStorage(pose, arrayLandmarks)
-        // trainPoseCounter--
-        // if (trainPoseCounter < 0) {
-        trainCurrentPose = false
-        // }
-    }
-
-    function predictPose(landmarks) {
+    async function predictPose(landmarks) {
         predictCurrentPose = false
         let arrayLandmarks = []
         if (landmarks.length === 0) return
         for (const landmark of landmarks[0]) {
             arrayLandmarks.push(landmark.x, landmark.y)
         }
-        const prediction = machine.classify(arrayLandmarks)
+        let prediction = await machine.classify(arrayLandmarks)
+        prediction = prediction[0].label.replace('|', '')
+
 
         if (sendinputs) {
             if (prediction !== lastPrediction) {
@@ -172,25 +148,21 @@ function Main() {
         console.log(prediction)
     }
 
-    function deletePoses() {
-        localStorage.setItem('poseData', '')
-    }
-
-    function deleteMove() {
-        if (!localStorage.getItem('poseData')) return
-
-        let poseData = JSON.parse(localStorage.getItem('poseData'))
-
-        for (const pose of poseData) {
-            if (pose.label === poseNameRef.current.value) {
-                console.log('yes')
-                const key = poseData.indexOf(pose)
-                delete poseData[key]
-            }
-        }
-
-        console.log(poseData)
-    }
+    // function deleteMove() {
+    //     if (!localStorage.getItem('poseData')) return
+    //
+    //     let poseData = JSON.parse(localStorage.getItem('poseData'))
+    //
+    //     for (const pose of poseData) {
+    //         if (pose.label === poseNameRef.current.value) {
+    //             console.log('yes')
+    //             const key = poseData.indexOf(pose)
+    //             delete poseData[key]
+    //         }
+    //     }
+    //
+    //     console.log(poseData)
+    // }
 
     function sendInputs() {
         sendinputs = !sendinputs
@@ -200,22 +172,6 @@ function Main() {
         console.log('enabling tracking in 5 seconds')
         setTimeout(() => {
             enablePredictions = !enablePredictions
-        }, 5000)
-    }
-
-    function toggleTrain() {
-        console.log('training pose in 5 seconds')
-        setTimeout(() => {
-            trainCurrentPose = !trainCurrentPose
-            // trainPoseCounter = 20
-            console.log('trained pose')
-        }, 1)
-    }
-
-    function togglePredictPose() {
-        console.log('predicting pose in 5 seconds')
-        setTimeout(() => {
-            predictCurrentPose = !predictCurrentPose
         }, 5000)
     }
 
@@ -239,12 +195,7 @@ function Main() {
         <>
             <h1 className="current-move" ref={currentMoveText}>current move</h1>
             <div>
-                <input type="text" placeholder="pose name" ref={poseNameRef}/>
                 <button onClick={togglePredictions}>Toggle predictions</button>
-                <button onClick={toggleTrain}>Train current pose</button>
-                <button onClick={togglePredictPose}>Predict pose</button>
-                <button onClick={deletePoses}>Delete model</button>
-                <button onClick={deleteMove}>Delete move</button>
                 <button onClick={sendInputs}>send inputs</button>
                 <button onClick={testInput}>test input</button>
             </div>
