@@ -155,7 +155,7 @@ function CreateData() {
         setTimeout(() => {
             trainTestPose = !trainTestPose
             console.log('trained pose')
-        }, 1)
+        }, 5000)
     }
 
     function toggleTrain() {
@@ -201,8 +201,8 @@ function CreateData() {
                     <button onClick={toggleTestTrain}>Train current test pose</button>
                 </div>
                 <div>
-                    <Webcam className="overlap" style={{top: "30em"}} audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
-                    <canvas className="overlap" style={{top: "30em"}} ref={canvasRef}></canvas>
+                    <Webcam className="overlap" style={{top: "54em"}} audio={false} ref={webcamRef} screenshotFormat="image/jpeg"/>
+                    <canvas className="overlap" style={{top: "54em"}} ref={canvasRef}></canvas>
                 </div>
             </div>
         </>

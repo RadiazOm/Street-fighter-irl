@@ -30,11 +30,13 @@ body {
 .center {
   display: flex;
   place-items: center;
+  flex-direction: column;
   min-width: 320px;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+
 }
 
 
@@ -45,8 +47,8 @@ body {
   right: 0;
   margin-right: auto;
   margin-left: auto;
-  width: 200px;
-  height: auto;
+  height: 400px;
+  width: auto;
 }
 
 .overlap {
